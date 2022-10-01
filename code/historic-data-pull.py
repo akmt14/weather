@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import os
 import logging
 
-def main(webpage, source):
+def report_download(webpage, source):
 
     """
     downloads historic reports
@@ -64,10 +64,10 @@ webpage = "https://academic.udayton.edu/kissock/http/Weather/"
 
 
 for url in urls:
-    main(webpage = webpage,
+    report_download(webpage = webpage,
         source  = url)
 
 
 if __name__ == "__main__":
-    main()
+    report_download()
 
