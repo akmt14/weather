@@ -65,7 +65,5 @@ for url in urls:
         webpage = webpage,
         source  = url)
 
-if __name__ == "__main__":
-    report_name_download()
 
 
