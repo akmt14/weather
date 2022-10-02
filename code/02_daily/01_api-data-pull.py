@@ -116,13 +116,3 @@ try:
 
 except Exception as e:
     print(e)
-
-
-
-            # elif not os.path.isfile(date_folder+"/datadump"):
-            #     try:
-            #         with open('{0}/{1}'.format(date_folder,"datadump"), "a", encoding='utf-8') as f:
-            #             json.dump(response.content.decode('utf8'), f, indent=4)
-
-            #     except Exception as e:
-            #         print(e)
