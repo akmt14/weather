@@ -1,8 +1,7 @@
 #Downloading weather data using Python as a CSV using the Visual Crossing Weather API
 #See https://www.visualcrossing.com/resources/blog/how-to-load-historical-weather-data-using-python-without-scraping/ for more information.
-from posixpath import sep
+
 import requests
-import sys
 import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -11,7 +10,6 @@ import json
 import logging
 
 load_dotenv
-
 
 def city_report_pull(location):
 
@@ -107,10 +105,11 @@ def city_report_pull(location):
                     logging.info('{0}/{1}'.format(date_folder, file_))
 
                 except Exception as e:
-                    print(e)            
+                    print(e)          
+                    logging.error('{0}/{1}-ERROR:{2}'.format(date_folder, file_, e))  
                 
     except Exception as e:
         print(e)
-        logging.error('{0}/{1}'.format(date_folder, file_))
+        logging.error('{0}/{1}-ERROR:{2}'.format(date_folder, file_, e))
 
 city_report_pull('Tokyo')
