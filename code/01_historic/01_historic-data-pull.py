@@ -15,12 +15,12 @@ def report_download(webpage, source):
     """
 
     if ('US') in str(source).split("/")[-1]:
-        folder = './data/local'
+        folder = './data/01_historic/local'
         if not os.path.exists(folder):
             os.makedirs(folder)
 
     else:
-        folder = './data/international'
+        folder = './data/01_historic/international'
         if not os.path.exists(folder):
             os.makedirs(folder)
 
