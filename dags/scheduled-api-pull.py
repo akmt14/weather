@@ -4,7 +4,7 @@ from airflow.operators.python import PythonOperator
 
 from datetime import datetime
 
-#from code.daily.api_data_pull import city_report_pull
+from code.daily.api_data_pull import city_report_pull
 
 with open('data/metadata/00_local_cities.txt', 'r') as f:
     cities = f.read().splitlines()
