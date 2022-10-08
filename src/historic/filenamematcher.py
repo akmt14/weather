@@ -9,15 +9,15 @@ def file_renamer(location):
     """
 
     if location == "local":
-        with open('data/metadata/us_state_abbr', 'r') as f:
+        with open('../../data/metadata/us_state_abbr', 'r') as f:
             abbr = json.load(f)[0]
-        with open('data/local/00_local_cities.txt', 'r') as f:
+        with open('../../data/local/00_local_cities.txt', 'r') as f:
             cities = f.read().splitlines()
 
     else:
-        with open('data/metadata/country_abbr', 'r') as f:
+        with open('../../data/metadata/country_abbr', 'r') as f:
             abbr = json.load(f)[0]
-        with open('data/international/00_international_cities.txt', 'r') as f:
+        with open('../../data/international/00_international_cities.txt', 'r') as f:
             cities = f.read().splitlines()
 
     for k, v in abbr.items():

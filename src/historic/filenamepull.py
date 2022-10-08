@@ -15,12 +15,12 @@ def report_name_download(webpage, source):
 
     """
     if ('US') in str(source).split("/")[-1]:
-            folder = './data/01_historic/local'
+            folder = '../../data/01_historic/local'
             if not os.path.exists(folder):
                 os.makedirs(folder)
 
     else:
-        folder = './data/01_historic/international'
+        folder = '../../data/01_historic/international'
         if not os.path.exists(folder):
             os.makedirs(folder)
 
@@ -45,11 +45,11 @@ def report_name_download(webpage, source):
             cleaned_cities.append(city)
     
     if ('US') in str(source).split("/")[-1]:
-        with open('./data/metadata/00_local_cities.txt', 'w') as f:
+        with open('../../data/metadata/00_local_cities.txt', 'w') as f:
             for city in cleaned_cities:
                 f.write(f'{city}\n')
     else:
-        with open('./data/metadata/00_international_cities.txt', 'w') as f:
+        with open('../../data/metadata/00_international_cities.txt', 'w') as f:
             for city in cleaned_cities:
                 f.write(f'{city}\n')
 
