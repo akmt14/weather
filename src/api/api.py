@@ -88,7 +88,7 @@ def api_data_pull(location_parent, location_child):
             if os.path.exists(date_folder):
 
                 if os.path.isfile(date_folder + f'/{file_}.json'):
-                    print(f"File for {file_} for {StartDate} already exists. Skipping download.")
+                    print("File for {0} for {1} already exists. Skipping download.".format(file_, StartDate))
                     pass
 
                 elif not os.path.isfile(date_folder + f'/{file_}.json'):
@@ -104,10 +104,10 @@ def api_data_pull(location_parent, location_child):
                                             level=logging.DEBUG)
 
                         logging.info('{0}/{1}'.format(date_folder, file_))
-                        print(f"File for {file_} for {StartDate} downloaded!")
+                        print("File for {0} for {1} downloaded!".format(file_, StartDate))
 
                     except ValueError:
-                        print("Incorrect Input values. Try again!")
+                        print("Unable to fetch report for {0} for {1}. Try again!".format(file_, StartDate))
 
                     except Exception as e:
                         print(e)          
