@@ -20,14 +20,14 @@ def api_data_pull(location_parent, location_child):
 
     try:
 
-        parent, child = location_parent, location_child
+        parent, child = "local", "cawawdawdawd" #location_parent, location_child
         
         # This is the core of our weather query URL
         BaseURL = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'
         
         load_dotenv("../../.env")
         API_KEY = os.getenv('APIKEY')
-       
+        
         #UnitGroup sets the units of the output - us or metric
         UnitGroup = 'us'
 
@@ -71,16 +71,16 @@ def api_data_pull(location_parent, location_child):
 
         url += "&key=" + API_KEY
 
+        folder = (f'../../data/02_daily/{parent}/')
+        date_folder = folder + StartDate
+        file_ = child.upper()
+
         try:
             response = requests.get(url).json()
             
-            folder = (f'../../data/02_daily/{parent}/')
-
             if not os.path.exists(folder):
                 os.makedirs(folder)
 
-            date_folder = folder + StartDate
-            file_ = child.upper()
 
             if not os.path.exists(date_folder):
                 os.makedirs(date_folder)
@@ -106,16 +106,22 @@ def api_data_pull(location_parent, location_child):
                         logging.info('{0}/{1}'.format(date_folder, file_))
                         print(f"File for {file_} for {StartDate} downloaded!")
 
+                    except ValueError:
+                        print("Incorrect Input values. Try again!")
+
                     except Exception as e:
                         print(e)          
                         logging.error('{0}/{1}-ERROR:{2}'.format(date_folder, file_, e))  
-                    
+
+        except ValueError:
+            print("Incorrect Input values. Try again!")                
+
         except Exception as e:
             print(e)
             logging.error('{0}/{1}-ERROR:{2}'.format(date_folder, file_, e))
 
     except Exception as e:
-        print(e, " - Command Line Arguments incorrect")
+        print(e, " - Command Line Arguments Incorrect")
 
 if __name__ == '__main__':
     
