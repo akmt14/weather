@@ -8,6 +8,7 @@ import json
 import logging
 import sys
 from airflow.models import Variable
+from dotenv import load_dotenv
 
 def api_data_pull(location_parent:str, location_child:str):
 
@@ -22,15 +23,12 @@ def api_data_pull(location_parent:str, location_child:str):
 
         parent, child = location_parent, location_child
 
-        print(15*"-")
-        print(parent)
-        print(child)
-        print(15*"-")
-        
+       
         # This is the core of our weather query URL
         BaseURL='https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'
         
-        API_KEY=Variable.get("WeatherAPIKEY")
+        load_dotenv("../../.env")
+        API_KEY = os.getenv('APIKEY')
         
         #UnitGroup sets the units of the output - us or metric
         UnitGroup = 'us'
