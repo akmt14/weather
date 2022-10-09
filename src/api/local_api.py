@@ -4,12 +4,12 @@
 import requests
 import os
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 import json
 import logging
 import sys
+from airflow.models import Variable
 
-def api_data_pull(location_parent, location_child):
+def api_data_pull(location_parent:str, location_child:str):
 
     """
     pull t-1 day's weather report for specified city
@@ -20,13 +20,17 @@ def api_data_pull(location_parent, location_child):
 
     try:
 
-        parent, child = "local", "cawawdawdawd" #location_parent, location_child
+        parent, child = location_parent, location_child
+
+        print(15*"-")
+        print(parent)
+        print(child)
+        print(15*"-")
         
         # This is the core of our weather query URL
-        BaseURL = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'
+        BaseURL='https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'
         
-        load_dotenv("../../.env")
-        API_KEY = os.getenv('APIKEY')
+        API_KEY=Variable.get("WeatherAPIKEY")
         
         #UnitGroup sets the units of the output - us or metric
         UnitGroup = 'us'
@@ -71,16 +75,15 @@ def api_data_pull(location_parent, location_child):
 
         url += "&key=" + API_KEY
 
-        folder = (f'../../data/02_daily/{parent}/')
+        folder = (f'./data/02_daily/{parent}/')
         date_folder = folder + StartDate
-        file_ = child.upper()
+        file_ = child.replace(" ","").replace(".","").upper()
 
         try:
             response = requests.get(url).json()
             
             if not os.path.exists(folder):
                 os.makedirs(folder)
-
 
             if not os.path.exists(date_folder):
                 os.makedirs(date_folder)
@@ -105,7 +108,9 @@ def api_data_pull(location_parent, location_child):
 
                         logging.info('{0}/{1}'.format(date_folder, file_))
                         print("File for {0} for {1} downloaded!".format(file_, StartDate))
-
+                        print(15*"-")
+                        print(os.path.abspath(file_))
+                        print(15*"-")
                     except ValueError:
                         print("Unable to fetch report for {0} for {1}. Try again!".format(file_, StartDate))
 
@@ -123,11 +128,9 @@ def api_data_pull(location_parent, location_child):
     except Exception as e:
         print(e, " - Command Line Arguments Incorrect")
 
-if __name__ == '__main__':
-    
+if __name__ == '__main__':    
     try:
         parent, child = sys.argv[1], sys.argv[2]
         api_data_pull(location_parent = parent, location_child = child)
-
     except Exception as e:
         print("API data pull ERROR - {}".format(e))
