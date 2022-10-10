@@ -1,6 +1,7 @@
 #Downloading weather data using Python as a CSV using the Visual Crossing Weather API
 #See https://www.visualcrossing.com/resources/blog/how-to-load-historical-weather-data-using-python-without-scraping/ for more information.
 
+import imp
 import requests
 import os
 from datetime import datetime, timedelta
@@ -8,6 +9,7 @@ import json
 import logging
 import sys
 from airflow.models import Variable
+from airflow.exceptions import AirflowFailException
 
 def api_data_pull(location_parent:str, location_child:str):
 
@@ -22,11 +24,6 @@ def api_data_pull(location_parent:str, location_child:str):
 
         parent, child = location_parent, location_child
 
-        print(15*"-")
-        print(parent)
-        print(child)
-        print(15*"-")
-        
         # This is the core of our weather query URL
         BaseURL='https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'
         
@@ -75,9 +72,10 @@ def api_data_pull(location_parent:str, location_child:str):
 
         url += "&key=" + API_KEY
 
-        folder = (f'./data/02_daily/{parent}/')
+        folder = (f'../data/02_daily/{parent}/')
         date_folder = folder + StartDate
         file_ = child.replace(" ","").replace(".","").upper()
+        d_logs_folder = "./data/logs" #error
 
         try:
             response = requests.get(url).json()
@@ -87,6 +85,12 @@ def api_data_pull(location_parent:str, location_child:str):
 
             if not os.path.exists(date_folder):
                 os.makedirs(date_folder)
+
+            try:
+                if not os.path.exists(d_logs_folder):
+                    os.makedirs(d_logs_folder)                        
+            except:
+                raise AirflowFailException('Unable to create API log folder.')
 
             if os.path.exists(date_folder):
 
@@ -99,20 +103,19 @@ def api_data_pull(location_parent:str, location_child:str):
                     try:
                         with open('{0}/{1}'.format(date_folder, f'/{file_}.json'), "w") as f:
                             json.dump([response], f, indent=4, ensure_ascii=False)
-                    
-                        logging.basicConfig(filename="../../download_logs",
+
+                            print(d_logs_folder +"/apilog")
+                            logging.basicConfig(filename=d_logs_folder +"/apilog",
                                             filemode='a',
                                             format='%(asctime)s %(message)s',
                                             datefmt='%Y-%m-%d %H:%M:%S',
                                             level=logging.DEBUG)
 
-                        logging.info('{0}/{1}'.format(date_folder, file_))
-                        print("File for {0} for {1} downloaded!".format(file_, StartDate))
-                        print(15*"-")
-                        print(os.path.abspath(file_))
-                        print(15*"-")
+                            logging.info('{0}/{1}'.format(date_folder, file_))
+                        
                     except ValueError:
                         print("Unable to fetch report for {0} for {1}. Try again!".format(file_, StartDate))
+                        sys.exit(1)
 
                     except Exception as e:
                         print(e)          
