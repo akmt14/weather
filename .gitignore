@@ -6,3 +6,8 @@
 logs
 download_logs
 data
+*.pyc
+.DS_Store
+src/weather-docker/metadata/*.txt
+src/weather-docker/dags/*.txt
+*.drawio
