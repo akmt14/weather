@@ -1,17 +1,21 @@
 #Downloading weather data using Python as a CSV using the Visual Crossing Weather API
 #See https://www.visualcrossing.com/resources/blog/how-to-load-historical-weather-data-using-python-without-scraping/ for more information.
 
-import imp
 import requests
 import os
 from datetime import datetime, timedelta
 import json
-import logging
 import sys
 from airflow.models import Variable
-from airflow.exceptions import AirflowFailException
+from airflow.exceptions import AirflowFailException, AirflowException
+import json
+import sys
+import requests
+import os
+from airflow.models import Variable
+import logger as log
 
-def api_data_pull(location_parent:str, location_child:str):
+def data_pull(location_parent:str, location_child:str):
 
     """
     pull t-1 day's weather report for specified city
@@ -72,68 +76,68 @@ def api_data_pull(location_parent:str, location_child:str):
 
         url += "&key=" + API_KEY
 
-        folder = (f'../data/02_daily/{parent}/')
-        date_folder = folder + StartDate
-        file_ = child.replace(" ","").replace(".","").upper()
-        d_logs_folder = "./data/logs" #error
+        parent_folder = f'../data/02_daily/{parent}/'
+        _folder = parent_folder + StartDate
+        _file = child.replace(" ","").replace(".","").upper()
+        logs = "../data/logs/"
 
         try:
             response = requests.get(url).json()
             
-            if not os.path.exists(folder):
-                os.makedirs(folder)
+            if not os.path.exists(parent_folder):
+                os.makedirs(parent_folder)
 
-            if not os.path.exists(date_folder):
-                os.makedirs(date_folder)
+            if not os.path.exists(_folder):
+                os.makedirs(_folder)
 
             try:
-                if not os.path.exists(d_logs_folder):
-                    os.makedirs(d_logs_folder)                        
-            except:
-                raise AirflowFailException('Unable to create API log folder.')
+                if not os.path.exists(logs):
+                    os.makedirs(logs)                        
+            except Exception as e:
+                raise AirflowFailException('Unable to create download log folder.', e)
 
-            if os.path.exists(date_folder):
+            if os.path.exists(_folder):
 
-                if os.path.isfile(date_folder + f'/{file_}.json'):
-                    print("File for {0} for {1} already exists. Skipping download.".format(file_, StartDate))
+                if os.path.isfile(_folder + f'/{_file}.json'):
+                    print("File for {0} for {1} already exists. Skipping download.".format(_file, StartDate))
                     pass
 
-                elif not os.path.isfile(date_folder + f'/{file_}.json'):
+                elif not os.path.isfile(_folder + f'/{_file}.json'):
 
                     try:
-                        with open('{0}/{1}'.format(date_folder, f'/{file_}.json'), "w") as f:
+                        with open('{0}/{1}'.format(_folder, f'/{_file}.json'), "w") as f:
                             json.dump([response], f, indent=4, ensure_ascii=False)
-
-                            print(d_logs_folder +"/apilog")
-                            logging.basicConfig(filename=d_logs_folder +"/apilog",
-                                            filemode='a',
-                                            format='%(asctime)s %(message)s',
-                                            datefmt='%Y-%m-%d %H:%M:%S',
-                                            level=logging.DEBUG)
-
-                            logging.info('{0}/{1}'.format(date_folder, file_))
-                        
-                    except ValueError:
-                        print("Unable to fetch report for {0} for {1}. Try again!".format(file_, StartDate))
-                        sys.exit(1)
+                        lr = log.log_record(_folder, _file)
+                        msg = lr.success()
+                        lr.write_log(msg)
 
                     except Exception as e:
-                        print(e)          
-                        logging.error('{0}/{1}-ERROR:{2}'.format(date_folder, file_, e))  
+                        lr = log.log_record(_folder, _file, e)
+                        msg = lr.fail()
+                        lr.write_log(msg)
+                        raise AirflowException("Unable to fetch report for {0} for {1}. Reason - {2}!".format(_file, StartDate, e))
 
-        except ValueError:
-            print("Incorrect Input values. Try again!")                
-
+        except ValueError as e:
+            lr = log.log_record(_folder, _file, e)
+            msg = lr.fail()
+            lr.write_log(msg)
+            raise AirflowException("Unable to fetch report for {0} for {1}. Reason - {2}!".format(_file, StartDate, e))            
+        
         except Exception as e:
-            print(e)
-            logging.error('{0}/{1}-ERROR:{2}'.format(date_folder, file_, e))
+            lr = log.log_record(_folder, _file, e)
+            msg = lr.fail()
+            lr.write_log(msg)
+            raise AirflowException("Unable to fetch report for {0} for {1}. Reason - {2}!".format(_file, StartDate, e))     
 
     except Exception as e:
-        print(e, " - Command Line Arguments Incorrect")
+        lr = log.log_record(_folder, _file, e)
+        msg = lr.fail()
+        lr.write_log(msg)        
+        print(e)
 
 if __name__ == '__main__':    
     try:
         parent, child = sys.argv[1], sys.argv[2]
-        api_data_pull(location_parent = parent, location_child = child)
+        data_pull(location_parent = parent, location_child = child)
     except Exception as e:
         print("API data pull ERROR - {}".format(e))
