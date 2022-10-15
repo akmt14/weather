@@ -11,3 +11,5 @@ data
 src/weather-docker/metadata/*.txt
 src/weather-docker/dags/*.txt
 *.drawio
+*.png
+*.webp
