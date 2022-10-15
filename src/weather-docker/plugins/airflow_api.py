@@ -82,7 +82,6 @@ def data_pull(location_parent:str, location_child:str):
         logs = "../data/logs/"
 
         try:
-            response = requests.get(url).json()
             
             if not os.path.exists(parent_folder):
                 os.makedirs(parent_folder)
@@ -105,6 +104,7 @@ def data_pull(location_parent:str, location_child:str):
                 elif not os.path.isfile(_folder + f'/{_file}.json'):
 
                     try:
+                        response = requests.get(url).json()
                         with open('{0}/{1}'.format(_folder, f'/{_file}.json'), "w") as f:
                             json.dump([response], f, indent=4, ensure_ascii=False)
                         lr = log.log_record(_folder, _file)
