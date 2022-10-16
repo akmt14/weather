@@ -106,9 +106,6 @@ def api_data_pull(location_parent:str, location_child:str):
 
                         logging.info('{0}/{1}'.format(date_folder, file_))
                         print("File for {0} for {1} downloaded!".format(file_, StartDate))
-                        print(15*"-")
-                        print(os.path.abspath(file_))
-                        print(15*"-")
                     except ValueError:
                         print("Unable to fetch report for {0} for {1}. Try again!".format(file_, StartDate))
 
