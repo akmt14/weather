@@ -33,7 +33,7 @@ class log_record:
         curr_dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         level_name = "ERROR"
         error = self._error
-        self._log = '{}|{}|{}|{}|{}|{}\n'.format(curr_dt, level_name, error, self._folder, self._file)
+        self._log = '{}|{}|{}|{}|{}\n'.format(curr_dt, level_name, error, self._folder, self._file)
         
         return self._log
 
