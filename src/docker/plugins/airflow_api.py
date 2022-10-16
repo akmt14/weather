@@ -127,13 +127,10 @@ def data_pull(location_parent:str, location_child:str):
             lr = log.log_record(_folder, _file, e)
             msg = lr.fail()
             lr.write_log(msg)
-            raise AirflowException("Unable to fetch report for {0} for {1}. Reason - {2}!".format(_file, StartDate, e))     
+            raise AirflowException("Unable to fetch report for {0} for {1}. Reason - {2}!".format(_file, StartDate, e))    
 
     except Exception as e:
-        lr = log.log_record(_folder, _file, e)
-        msg = lr.fail()
-        lr.write_log(msg)        
-        print(e)
+        raise AirflowException("Error Reason - {0}!".format(e))
 
 if __name__ == '__main__':    
     try:
