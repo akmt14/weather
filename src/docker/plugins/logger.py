@@ -5,7 +5,7 @@ class log_record:
     _path = "../data/logs/"
 
     """
-    _summary_ : records outcome of DAG run. Implemented to facilitate issue due to 
+    _summary_ : records outcome of DAG run. Implemented to circumvent airflow logging issue.
 
     Methods:
         success() - On successful json download
