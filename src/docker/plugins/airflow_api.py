@@ -106,7 +106,8 @@ def data_pull(location_parent:str, location_child:str):
                     try:
                         response = requests.get(url).json()
                         with open('{0}/{1}'.format(_folder, f'/{_file}.json'), "w") as f:
-                            json.dump([response], f, indent=4, ensure_ascii=False)
+                            json.dump(response, f)
+                        
                         lr = log.log_record(_folder, _file)
                         msg = lr.success()
                         lr.write_log(msg)
