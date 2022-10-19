@@ -1,0 +1,48 @@
+CREATE unlogged TABLE weather_import_temp (doc JSON)
+
+COPY weather_import_temp FROM '/Users/akshaykamath/Documents/Project/weather/data/02_daily/local/2022-10-17/ABILENE.json';
+
+INSERT INTO weather_daily_local (queryCost, latitude, longitude, resolvedAddress, address, timezone, tzoffset, datetime, datetimeEpoch, tempmax, tempmin, feelslikemax, feelslikemin, feelslike, dew, humidity, precip, precipprob, precipcover, preciptype, snow, snowdepth, windgust, windspeed, winddir, pressure, cloudcover, visibility, solarradiation, solarenergy, uvindex, severerisk, sunrise, sunriseEpoch, sunset, sunsetEpoch, moonphase, conditions, description, icon, station)
+
+SELECT (doc->>'queryCost')::INT AS queryCost,
+	(doc->>'latitude') AS latitude,
+    (doc->>'longitude') AS longitude,
+	(doc->>'resolvedAddress') AS resolvedAddress,
+	(doc->>'address') AS "address",
+	(doc->>'timezone') AS timezone,
+	(doc->>'tzoffset')::DOUBLE PRECISION AS tzoffset,
+	(doc->'days'->0->>'datetime')::DATE AS "datetime",
+	(doc->'days'->0->>'datetimeEpoch')::INT AS datetimeEpoch,
+    (doc->'days'->0->>'tempmax')::DOUBLE PRECISION AS tempmax,
+	(doc->'days'->0->>'tempmin')::DOUBLE PRECISION AS tempmin,
+	(doc->'days'->0->>'feelslikemax')::DOUBLE PRECISION AS feelslikemax,
+	(doc->'days'->0->>'feelslikemin')::DOUBLE PRECISION AS feelslikemin,
+	(doc->'days'->0->>'feelslike')::DOUBLE PRECISION AS feelslike,
+	(doc->'days'->0->>'dew')::DOUBLE PRECISION AS dew,
+	(doc->'days'->0->>'humidity')::DOUBLE PRECISION AS humidity,
+	(doc->'days'->0->>'precip')::DOUBLE PRECISION AS precip,
+	(doc->'days'->0->>'precipprob')::DOUBLE PRECISION AS precipprob,
+	(doc->'days'->0->>'precipcover')::DOUBLE PRECISION AS precipcover,
+	(doc->'days'->0->>'preciptype') AS preciptype,
+	(doc->'days'->0->>'snow')::DOUBLE PRECISION AS snow,
+	(doc->'days'->0->>'snowdepth')::DOUBLE PRECISION AS snowdepth,
+	(doc->'days'->0->>'windgust')::DOUBLE PRECISION AS windgust,
+	(doc->'days'->0->>'windspeed')::DOUBLE PRECISION AS windspeed,
+	(doc->'days'->0->>'winddir')::DOUBLE PRECISION AS winddir,
+	(doc->'days'->0->>'pressure')::DOUBLE PRECISION AS pressure,
+	(doc->'days'->0->>'cloudcover')::DOUBLE PRECISION AS cloudcover,
+	(doc->'days'->0->>'visibility')::DOUBLE PRECISION AS visibility,
+	(doc->'days'->0->>'solarradiation')::DOUBLE PRECISION AS solarradiation,
+	(doc->'days'->0->>'solarenergy')::DOUBLE PRECISION AS solarenergy,
+	(doc->'days'->0->>'uvindex')::DOUBLE PRECISION AS uvindex,
+	(doc->'days'->0->>'severerisk')::DOUBLE PRECISION AS severerisk,
+	(doc->'days'->0->>'sunrise') AS sunrise,
+	(doc->'days'->0->>'sunriseEpoch')::DOUBLE PRECISION AS sunriseEpoch,
+	(doc->'days'->0->>'sunset') AS sunset,
+	(doc->'days'->0->>'sunsetEpoch')::DOUBLE PRECISION AS sunsetEpoch,
+	(doc->'days'->0->>'moonphase')::DOUBLE PRECISION AS moonphase,
+	(doc->'days'->0->>'conditions') AS conditions,
+	(doc->'days'->0->>'description') AS description,
+	(doc->'days'->0->>'icon') AS icon,
+	(doc->'days'->'stations')::JSON as stations
+FROM weather_import_temp;
