@@ -15,7 +15,8 @@ import os
 from airflow.models import Variable
 import logger as log
 
-def data_pull(location_parent:str, location_child:str):
+
+def data_pull(location_parent:str, location_child:str, ti, **context):
 
     """
     pull t-1 day's weather report for specified city
@@ -107,11 +108,14 @@ def data_pull(location_parent:str, location_child:str):
                         response = requests.get(url).json()
                         with open('{0}/{1}'.format(_folder, f'/{_file}.json'), "w") as f:
                             json.dump(response, f)
-                        
                         lr = log.log_record(_folder, _file)
                         msg = lr.success()
                         lr.write_log(msg)
-
+                        
+                        folder_path =  _folder #"/Users/akshaykamath/Documents/Project/weather/data/02_daily/local/2022-10-22/".format(_file) "/".join([i for i in _folder.split('/')[1:]])
+                        ti.xcom_push(key='folder_path', value=folder_path)
+                        #return folder_path
+                                
                     except Exception as e:
                         lr = log.log_record(_folder, _file, e)
                         msg = lr.fail()
