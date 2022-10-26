@@ -1,19 +1,15 @@
 #Downloading weather data using Python as a CSV using the Visual Crossing Weather API
 #See https://www.visualcrossing.com/resources/blog/how-to-load-historical-weather-data-using-python-without-scraping/ for more information.
 
-import requests
 import os
+import sys
 from datetime import datetime, timedelta
 import json
-import sys
-from airflow.models import Variable
-from airflow.exceptions import AirflowFailException, AirflowException
-import json
-import sys
 import requests
-import os
-from airflow.models import Variable
 import logger as log
+
+from airflow.exceptions import AirflowFailException, AirflowException
+from airflow.models import Variable
 
 
 def data_pull(location_parent:str, location_child:str, ti, **context):
@@ -112,9 +108,8 @@ def data_pull(location_parent:str, location_child:str, ti, **context):
                         msg = lr.success()
                         lr.write_log(msg)
                         
-                        folder_path =  _folder #"/Users/akshaykamath/Documents/Project/weather/data/02_daily/local/2022-10-22/".format(_file) "/".join([i for i in _folder.split('/')[1:]])
+                        folder_path = _folder
                         ti.xcom_push(key='folder_path', value=folder_path)
-                        #return folder_path
                                 
                     except Exception as e:
                         lr = log.log_record(_folder, _file, e)
