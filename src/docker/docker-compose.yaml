@@ -60,6 +60,8 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    HOST_PATH: /Users/akshaykamath/Documents/Project/weather/data
+    
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
