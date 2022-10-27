@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS weather_daily_local
+CREATE TABLE IF NOT EXISTS weather.daily_api_local
     (id SERIAL PRIMARY KEY NOT NULL,
 	queryCost INT,
 	latitude TEXT,
