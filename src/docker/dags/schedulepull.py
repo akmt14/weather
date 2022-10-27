@@ -161,7 +161,8 @@ with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
                 op_args = ["local", city],
                 provide_context = True,
                 do_xcom_push = True,
-                trigger_rule = TriggerRule.ALL_DONE
+                trigger_rule = TriggerRule.ALL_DONE,
+                retries = 2
                 )
 
             task3
