@@ -42,3 +42,12 @@ CREATE TABLE IF NOT EXISTS weather.daily_api_local
     icon TEXT,
 	station JSON
     );
+
+CREATE TABLE IF NOT EXISTS weather.daily_historic_local
+(id SERIAL PRIMARY KEY NOT NULL,
+	"day" INT,
+	"month" INT,
+	"year" INT,
+	temp_f INT,
+    "state" TEXT,
+    city TEXT);
