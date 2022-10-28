@@ -42,10 +42,10 @@ bc_delete = """
             """
 
 sql_command = """
-                DROP TABLE IF EXISTS weather_temp;
-                CREATE UNLOGGED TABLE weather_temp (doc JSON);
-                COPY weather_temp from '{}' ;
-                INSERT INTO weather_daily_local (queryCost,
+                DROP TABLE IF EXISTS weather.load_temp;
+                CREATE UNLOGGED TABLE weather.load_temp (doc JSON);
+                COPY weather.load_temp from '{}' ;
+                INSERT INTO weather.daily_api_local (queryCost,
                                                     latitude,
                                                     longitude,
                                                     resolvedAddress,
@@ -128,7 +128,7 @@ sql_command = """
                             (doc->'days'->0->>'description') AS description,
                             (doc->'days'->0->>'icon') AS icon,
                             (doc->'days'->'stations')::JSON as stations
-                            FROM weather_temp;
+                            FROM weather.load_temp;
               """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
 
 default_args = {
