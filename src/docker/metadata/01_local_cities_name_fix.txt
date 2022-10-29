@@ -38,7 +38,7 @@ Baltimore
 Sioux City
 Elkins
 Syracuse
-Salem
+Salem MA
 Albuquerque
 Rockford
 Billings
@@ -75,7 +75,7 @@ Austin
 Yuma AZ
 Eugene
 Nashville
-Columbia
+Columbia SC
 Grand Junction
 Tallahassee
 Portland
@@ -105,7 +105,7 @@ Mobile
 North Platte
 Raleigh
 Ft Worth
-Birmingham
+Birmingham AL
 Jackson
 Roanoke
 Toledo
@@ -123,7 +123,7 @@ Lake Charles
 Kansas City
 Reno
 Buffalo
-Rhode Island
+Providence RI
 Bismarck
 Cincinnati
 Fort Wayne
