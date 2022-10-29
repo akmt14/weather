@@ -8,7 +8,7 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.task_group import TaskGroup
-
+from datetime import timedelta
 
 def city_names():
     with open("./metadata/01_local_cities_name_fix.txt", 'r') as f:
@@ -19,16 +19,16 @@ def city_names():
 bc_combine = """
             cd /opt/airflow/
             file_path="{{ ti.xcom_pull(key='folder_path' )}}"
-            if [ ! -f $file_path/merged_file.json ]
-            then
-                for f in $file_path/*.json; do (cat "${f}"; echo) >> $file_path/merged_file.json; done
-                host_path='/Users/akshaykamath/Documents/Project/weather/data'
-                merged_file=$file_path/merged_file.json
-                host_file="$host_path/$(echo $merged_file | cut -d'/' -f3-)"
-                echo $host_file
-            else
-                echo *** file EXISTS. SKIPPING. ***
-            fi
+            now="$(date +%s)" 
+            if [ ! -f $file_path/merged_file.json ]; then
+            for f in $file_path/*.json; 
+            do if [[ $(($now-$(date -r ${f} +%s))) < 1500 ]]; then
+                    (cat "${f}"; echo) >> $file_path/merged_file.json; fi; done;
+                    host_path='/Users/akshaykamath/Documents/Project/weather/data'
+                    merged_file=$file_path/merged_file.json
+                    host_file="$host_path/$(echo $merged_file | cut -d'/' -f3-)"
+                    echo $host_file
+            fi; 
             """
 
 bc_delete = """
@@ -140,7 +140,8 @@ default_args = {
     'email' : ['akshay.kamath.14@gmail.com'], # <- TO DO
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 0    
+    'retries': 0    ,
+    'retry_delay': timedelta(minutes=2),
 }
 
 with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
@@ -154,7 +155,7 @@ with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
         )
 
     with TaskGroup('report_pull_transform', prefix_group_id=False ) as tg:
-        for city in city_names():
+        for city in city_names()[:2]:
             task3 = PythonOperator(
                 task_id = 'city_report_pull_{}'.format(city).replace(" ","").upper(),
                 python_callable = api.data_pull,
@@ -162,7 +163,7 @@ with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
                 provide_context = True,
                 do_xcom_push = True,
                 trigger_rule = TriggerRule.ALL_DONE,
-                retries = 2
+                retries = 5
                 )
 
             task3
