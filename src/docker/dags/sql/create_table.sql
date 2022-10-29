@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS weather.daily_api_local
 
 CREATE TABLE IF NOT EXISTS weather.daily_historic_local
 (id SERIAL PRIMARY KEY NOT NULL,
-	"day" TEXT,
 	"month" TEXT,
+	"day" TEXT,
 	"year" TEXT,
 	temp_f DOUBLE PRECISION,
     "state" TEXT,
