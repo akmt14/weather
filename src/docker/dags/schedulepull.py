@@ -140,10 +140,10 @@ default_args = {
     'email' : ['akshay.kamath.14@gmail.com'], # <- TO DO
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 0    
+    'retries': 0
 }
 
-with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
+with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
 
     task1 = DummyOperator(task_id='start')
 
@@ -161,8 +161,8 @@ with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
                 op_args = ["local", city],
                 provide_context = True,
                 do_xcom_push = True,
-                trigger_rule = TriggerRule.ALL_DONE,
-                retries = 2
+                trigger_rule = TriggerRule.ALL_SUCCESS,
+                retries = 5
                 )
 
             task3
@@ -171,15 +171,15 @@ with DAG("scheduled_api_pull_dag", default_args=default_args ) as dag:
         task_id = "combine_files",
         bash_command = bc_combine,
         do_xcom_push = True,
-        trigger_rule = TriggerRule.ALL_DONE
+        trigger_rule = TriggerRule.ALL_SUCCESS
     )
 
     task5 = PostgresOperator(
         task_id = "push_to_db",
         sql = sql_command,
         postgres_conn_id = "postgres_localhost",
-        autocommit=True,
-        database="projects"
+        autocommit = True,
+        database = "projects"
     )
 
     task6 = BashOperator(
