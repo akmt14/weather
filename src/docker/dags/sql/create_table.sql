@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS weather.daily_api_local
-    (id SERIAL PRIMARY KEY NOT NULL,
+(
+    id SERIAL PRIMARY KEY NOT NULL,
 	queryCost INT,
 	latitude TEXT,
 	longitude TEXT,
@@ -44,10 +45,21 @@ CREATE TABLE IF NOT EXISTS weather.daily_api_local
     );
 
 CREATE TABLE IF NOT EXISTS weather.daily_historic_local
-(id SERIAL PRIMARY KEY NOT NULL,
+(
+    id SERIAL PRIMARY KEY NOT NULL,
 	"month" TEXT,
 	"day" TEXT,
 	"year" TEXT,
 	temp_f DOUBLE PRECISION,
     "state" TEXT,
-    city TEXT);
+    city TEXT
+    );
+
+CREATE TABLE IF NOT EXISTS weather.dim_us_states
+(
+    id SERIAL PRIMARY KEY NOT NULL,
+    abb  TEXT,
+    "state" TEXT,
+    region TEXT
+    );
+    
