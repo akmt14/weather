@@ -41,7 +41,7 @@ bc_delete = """
             fi
             """
 
-sql_command = """
+sql_load = """
                 DROP TABLE IF EXISTS weather.load_temp;
                 CREATE UNLOGGED TABLE weather.load_temp (doc JSON);
                 COPY weather.load_temp from '{}' ;
@@ -131,6 +131,8 @@ sql_command = """
                             FROM weather.load_temp;
               """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
 
+sql_refresh = """REFRESH MATERIALIZED VIEW weather.v_daily_avg_temp;"""
+
 default_args = {
     'owner' : 'airflow',
     'start_date' : datetime(2022,10,26),
@@ -176,7 +178,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
 
     task5 = PostgresOperator(
         task_id = "push_to_db",
-        sql = sql_command,
+        sql = sql_load,
         postgres_conn_id = "postgres_localhost",
         autocommit = True,
         database = "projects"
@@ -188,7 +190,15 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         do_xcom_push = False
     )
 
-    task7 = DummyOperator(task_id='end')
+    task7 = PostgresOperator(
+        task_id = "refresh_materialized_view",
+        sql = sql_refresh,
+        postgres_conn_id = "postgres_localhost",
+        autocommit = True,
+        database = "projects"        
+    )
+
+    task8 = DummyOperator(task_id='end')
 
     #flow
-    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7
+    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8
