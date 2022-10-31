@@ -191,7 +191,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
     )
 
     task7 = PostgresOperator(
-        task_id = "refresh_materialized_view",
+        task_id = "view_refresh",
         sql = sql_refresh,
         postgres_conn_id = "postgres_localhost",
         autocommit = True,
