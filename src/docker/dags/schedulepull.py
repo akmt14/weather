@@ -131,7 +131,7 @@ sql_load = """
                             FROM weather.load_temp;
               """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
 
-sql_refresh = """REFRESH MATERIALIZED VIEW weather.v_daily_avg_temp;"""
+sql_refresh = """REFRESH MATERIALIZED VIEW weather.mv_daily_avg_temp;"""
 
 default_args = {
     'owner' : 'airflow',
