@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS weather.daily_api_local
 	station JSON
     );
 
-CREATE TABLE IF NOT EXISTS weather.daily_historic_local
+CREATE TABLE IF NOT EXISTS weather.daily_hist_local_ud
 (
     id SERIAL PRIMARY KEY NOT NULL,
 	"month" TEXT,
@@ -63,3 +63,21 @@ CREATE TABLE IF NOT EXISTS weather.dim_us_states
     region TEXT
     );
     
+CREATE TABLE IF NOT EXISTS weather.daily_historic_local_m
+(
+    id SERIAL PRIMARY KEY NOT NULL,
+    "time" DATE,
+    tavg DOUBLE PRECISION,
+    tmin DOUBLE PRECISION,
+    tmax DOUBLE PRECISION,
+    prcp DOUBLE PRECISION,
+    snow DOUBLE PRECISION,
+    wdir DOUBLE PRECISION,
+    wspd DOUBLE PRECISION,
+    wpgt DOUBLE PRECISION,
+    pres DOUBLE PRECISION,
+    tsun DOUBLE PRECISION,
+    lat DOUBLE PRECISION,
+    lon DOUBLE PRECISION,
+    "add" TEXT
+);
