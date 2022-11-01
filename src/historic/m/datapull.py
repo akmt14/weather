@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from sqlalchemy import create_engine
-from meteostat import Point, Daily
+from meteostat import Point, Daily, units
 import pandas as pd
 from dotenv import load_dotenv
 load_dotenv()
@@ -37,6 +37,9 @@ end = datetime(2022, 10, 24)
 for lat, lon, add in dfl:
     city = Point(eval(lat), eval(lon))
     data = Daily(city, start, end)
+    data.convert({'tavg': units.fahrenheit,
+                  'tmin': units.fahrenheit,
+                  'tmax': units.fahrenheit})
     try:
         data = data.fetch()
         data.reset_index(inplace=True)
