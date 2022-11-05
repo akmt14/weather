@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS weather.daily_api_local
+-- RAW TABLES
+
+CREATE TABLE IF NOT EXISTS weather.raw_daily_api_local
 (
     id SERIAL PRIMARY KEY NOT NULL,
 	queryCost INT,
@@ -44,7 +46,7 @@ CREATE TABLE IF NOT EXISTS weather.daily_api_local
 	station JSON
     );
 
-CREATE TABLE IF NOT EXISTS weather.daily_hist_local_ud
+CREATE TABLE IF NOT EXISTS weather.raw_daily_hist_local_ud
 (
     id SERIAL PRIMARY KEY NOT NULL,
 	"month" TEXT,
@@ -55,15 +57,8 @@ CREATE TABLE IF NOT EXISTS weather.daily_hist_local_ud
     city TEXT
     );
 
-CREATE TABLE IF NOT EXISTS weather.dim_us_states
-(
-    id SERIAL PRIMARY KEY NOT NULL,
-    abb  TEXT,
-    "state" TEXT,
-    region TEXT
-    );
     
-CREATE TABLE IF NOT EXISTS weather.daily_historic_local_m
+CREATE TABLE IF NOT EXISTS weather.raw_daily_historic_local_m
 (
     id SERIAL PRIMARY KEY NOT NULL,
     "time" DATE,
@@ -81,3 +76,83 @@ CREATE TABLE IF NOT EXISTS weather.daily_historic_local_m
     lon DOUBLE PRECISION,
     "add" TEXT
 );
+
+
+-- DIM TABLES
+
+CREATE TABLE IF NOT EXISTS weather.d_us_states
+(
+    id SERIAL PRIMARY KEY NOT NULL,
+    abb  TEXT,
+    "state" TEXT,
+    region TEXT
+    );
+
+CREATE TABLE IF NOT EXISTS weather.d_us_cities(
+    citykey SERIAL PRIMARY KEY NOT NULL,
+    cityname TEXT UNIQUE,
+    citylat TEXT,
+    citylon TEXT
+);
+
+-- FACT TABLES
+
+CREATE TABLE IF NOT EXISTS weather.f_daily(
+    d_id SERIAL PRIMARY KEY NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    datetime DATE,
+    tempmax DOUBLE PRECISION,
+	tempmin DOUBLE PRECISION,
+	feelslikemax DOUBLE PRECISION,
+	feelslikemin DOUBLE PRECISION,
+	feelslike DOUBLE PRECISION,
+	dew DOUBLE PRECISION,
+	humidity DOUBLE PRECISION,
+	precip DOUBLE PRECISION,
+    precipprob DOUBLE PRECISION,
+    precipcover DOUBLE PRECISION,
+    preciptype TEXT,
+    snow DOUBLE PRECISION,
+    snowdepth DOUBLE PRECISION,
+    windgust DOUBLE PRECISION,
+    windspeed DOUBLE PRECISION,
+    winddir DOUBLE PRECISION,
+    pressure DOUBLE PRECISION,
+    cloudcover DOUBLE PRECISION,
+    visibility DOUBLE PRECISION,
+    solarradiation DOUBLE PRECISION,
+    solarenergy DOUBLE PRECISION,
+    uvindex DOUBLE PRECISION,
+    severerisk DOUBLE PRECISION,
+    sunrise TEXT,
+    sunset TEXT,
+    moonphase DOUBLE PRECISION,
+    conditions TEXT,
+    description TEXT
+    );
+
+CREATE TABLE IF NOT EXISTS weather.f_hist_m(
+    m_id SERIAL PRIMARY KEY NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    datetime DATE,
+    tavg DOUBLE PRECISION,
+    tmin DOUBLE PRECISION,
+    tmax DOUBLE PRECISION,
+    prcp DOUBLE PRECISION,
+    snow DOUBLE PRECISION,
+    wdir DOUBLE PRECISION,
+    wspd DOUBLE PRECISION,
+    wpgt DOUBLE PRECISION,
+    pres DOUBLE PRECISION,
+    tsun DOUBLE PRECISION
+    );
+
+CREATE TABLE IF NOT EXISTS weather.f_hist_ud(
+    ud_id SERIAL PRIMARY KEY NOT NULL,
+    datetime DATE,
+	temp_f DOUBLE PRECISION,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION
+    );
