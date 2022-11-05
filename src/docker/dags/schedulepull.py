@@ -1,14 +1,16 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-import time
 import airflow_api as api
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.task_group import TaskGroup
+from typing import Sequence
 
+class CustomPostgres(PostgresOperator):
+    template_fields: Sequence[str] = ('sql', 'parameters')
 
 def city_names():
     with open("./metadata/01_local_cities_name_fix.txt", 'r') as f:
@@ -42,96 +44,132 @@ bc_delete = """
             """
 
 sql_load = """
-                DROP TABLE IF EXISTS weather.load_temp;
-                CREATE UNLOGGED TABLE weather.load_temp (doc JSON);
-                COPY weather.load_temp from '{}' ;
-                INSERT INTO weather.daily_api_local (queryCost,
-                                                    latitude,
-                                                    longitude,
-                                                    resolvedAddress,
-                                                    address,
-                                                    timezone,
-                                                    tzoffset,
-                                                    datetime,
-                                                    datetimeEpoch,
-                                                    tempmax,
-                                                    tempmin,
-                                                    feelslikemax,
-                                                    feelslikemin,
-                                                    feelslike,
-                                                    dew,
-                                                    humidity,
-                                                    precip,
-                                                    precipprob,
-                                                    precipcover,
-                                                    preciptype,
-                                                    snow,
-                                                    snowdepth,
-                                                    windgust,
-                                                    windspeed,
-                                                    winddir,
-                                                    pressure,
-                                                    cloudcover,
-                                                    visibility,
-                                                    solarradiation,
-                                                    solarenergy,
-                                                    uvindex,
-                                                    severerisk,
-                                                    sunrise,
-                                                    sunriseEpoch,
-                                                    sunset,
-                                                    sunsetEpoch,
-                                                    moonphase,
-                                                    conditions,
-                                                    description,
-                                                    icon,
-                                                    station)
+            DROP TABLE IF EXISTS weather.load_temp;
+            CREATE UNLOGGED TABLE weather.load_temp (doc JSON);
+            COPY weather.load_temp from '{}' ;
+            INSERT INTO weather.raw_daily_api_local (queryCost,
+                                                latitude,
+                                                longitude,
+                                                resolvedAddress,
+                                                address,
+                                                timezone,
+                                                tzoffset,
+                                                datetime,
+                                                datetimeEpoch,
+                                                tempmax,
+                                                tempmin,
+                                                feelslikemax,
+                                                feelslikemin,
+                                                feelslike,
+                                                dew,
+                                                humidity,
+                                                precip,
+                                                precipprob,
+                                                precipcover,
+                                                preciptype,
+                                                snow,
+                                                snowdepth,
+                                                windgust,
+                                                windspeed,
+                                                winddir,
+                                                pressure,
+                                                cloudcover,
+                                                visibility,
+                                                solarradiation,
+                                                solarenergy,
+                                                uvindex,
+                                                severerisk,
+                                                sunrise,
+                                                sunriseEpoch,
+                                                sunset,
+                                                sunsetEpoch,
+                                                moonphase,
+                                                conditions,
+                                                description,
+                                                icon,
+                                                station)
 
-                SELECT (doc->>'queryCost')::INT AS queryCost,
-                            (doc->>'latitude') AS latitude,
-                            (doc->>'longitude') AS longitude,
-                            (doc->>'resolvedAddress') AS resolvedAddress,
-                            (doc->>'address') AS "address",
-                            (doc->>'timezone') AS timezone,
-                            (doc->>'tzoffset')::DOUBLE PRECISION AS tzoffset,
-                            (doc->'days'->0->>'datetime')::DATE AS "datetime",
-                            (doc->'days'->0->>'datetimeEpoch')::NUMERIC  AS datetimeEpoch,
-                            (doc->'days'->0->>'tempmax')::DOUBLE PRECISION AS tempmax,
-                            (doc->'days'->0->>'tempmin')::DOUBLE PRECISION AS tempmin,
-                            (doc->'days'->0->>'feelslikemax')::DOUBLE PRECISION AS feelslikemax,
-                            (doc->'days'->0->>'feelslikemin')::DOUBLE PRECISION AS feelslikemin,
-                            (doc->'days'->0->>'feelslike')::DOUBLE PRECISION AS feelslike,
-                            (doc->'days'->0->>'dew')::DOUBLE PRECISION AS dew,
-                            (doc->'days'->0->>'humidity')::DOUBLE PRECISION AS humidity,
-                            (doc->'days'->0->>'precip')::DOUBLE PRECISION AS precip,
-                            (doc->'days'->0->>'precipprob')::DOUBLE PRECISION AS precipprob,
-                            (doc->'days'->0->>'precipcover')::DOUBLE PRECISION AS precipcover,
-                            (doc->'days'->0->>'preciptype')::TEXT AS preciptype,
-                            (doc->'days'->0->>'snow')::DOUBLE PRECISION AS snow,
-                            (doc->'days'->0->>'snowdepth')::DOUBLE PRECISION AS snowdepth,
-                            (doc->'days'->0->>'windgust')::DOUBLE PRECISION AS windgust,
-                            (doc->'days'->0->>'windspeed')::DOUBLE PRECISION AS windspeed,
-                            (doc->'days'->0->>'winddir')::DOUBLE PRECISION AS winddir,
-                            (doc->'days'->0->>'pressure')::DOUBLE PRECISION AS pressure,
-                            (doc->'days'->0->>'cloudcover')::DOUBLE PRECISION AS cloudcover,
-                            (doc->'days'->0->>'visibility')::DOUBLE PRECISION AS visibility,
-                            (doc->'days'->0->>'solarradiation')::DOUBLE PRECISION AS solarradiation,
-                            (doc->'days'->0->>'solarenergy')::DOUBLE PRECISION AS solarenergy,
-                            (doc->'days'->0->>'uvindex')::DOUBLE PRECISION AS uvindex,
-                            (doc->'days'->0->>'severerisk')::DOUBLE PRECISION AS severerisk,
-                            (doc->'days'->0->>'sunrise') AS sunrise,
-                            (doc->'days'->0->>'sunriseEpoch')::NUMERIC AS sunriseEpoch,
-                            (doc->'days'->0->>'sunset') AS sunset,
-                            (doc->'days'->0->>'sunsetEpoch')::NUMERIC AS sunsetEpoch,
-                            (doc->'days'->0->>'moonphase')::DOUBLE PRECISION AS moonphase,
-                            (doc->'days'->0->>'conditions') AS conditions,
-                            (doc->'days'->0->>'description') AS description,
-                            (doc->'days'->0->>'icon') AS icon,
-                            (doc->'days'->'stations')::JSON as stations
-                            FROM weather.load_temp;
-              """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
+            SELECT (doc->>'queryCost')::INT AS queryCost,
+                        (doc->>'latitude') AS latitude,
+                        (doc->>'longitude') AS longitude,
+                        (doc->>'resolvedAddress') AS resolvedAddress,
+                        (doc->>'address') AS "address",
+                        (doc->>'timezone') AS timezone,
+                        (doc->>'tzoffset')::DOUBLE PRECISION AS tzoffset,
+                        (doc->'days'->0->>'datetime')::DATE AS "datetime",
+                        (doc->'days'->0->>'datetimeEpoch')::NUMERIC  AS datetimeEpoch,
+                        (doc->'days'->0->>'tempmax')::DOUBLE PRECISION AS tempmax,
+                        (doc->'days'->0->>'tempmin')::DOUBLE PRECISION AS tempmin,
+                        (doc->'days'->0->>'feelslikemax')::DOUBLE PRECISION AS feelslikemax,
+                        (doc->'days'->0->>'feelslikemin')::DOUBLE PRECISION AS feelslikemin,
+                        (doc->'days'->0->>'feelslike')::DOUBLE PRECISION AS feelslike,
+                        (doc->'days'->0->>'dew')::DOUBLE PRECISION AS dew,
+                        (doc->'days'->0->>'humidity')::DOUBLE PRECISION AS humidity,
+                        (doc->'days'->0->>'precip')::DOUBLE PRECISION AS precip,
+                        (doc->'days'->0->>'precipprob')::DOUBLE PRECISION AS precipprob,
+                        (doc->'days'->0->>'precipcover')::DOUBLE PRECISION AS precipcover,
+                        (doc->'days'->0->>'preciptype')::TEXT AS preciptype,
+                        (doc->'days'->0->>'snow')::DOUBLE PRECISION AS snow,
+                        (doc->'days'->0->>'snowdepth')::DOUBLE PRECISION AS snowdepth,
+                        (doc->'days'->0->>'windgust')::DOUBLE PRECISION AS windgust,
+                        (doc->'days'->0->>'windspeed')::DOUBLE PRECISION AS windspeed,
+                        (doc->'days'->0->>'winddir')::DOUBLE PRECISION AS winddir,
+                        (doc->'days'->0->>'pressure')::DOUBLE PRECISION AS pressure,
+                        (doc->'days'->0->>'cloudcover')::DOUBLE PRECISION AS cloudcover,
+                        (doc->'days'->0->>'visibility')::DOUBLE PRECISION AS visibility,
+                        (doc->'days'->0->>'solarradiation')::DOUBLE PRECISION AS solarradiation,
+                        (doc->'days'->0->>'solarenergy')::DOUBLE PRECISION AS solarenergy,
+                        (doc->'days'->0->>'uvindex')::DOUBLE PRECISION AS uvindex,
+                        (doc->'days'->0->>'severerisk')::DOUBLE PRECISION AS severerisk,
+                        (doc->'days'->0->>'sunrise') AS sunrise,
+                        (doc->'days'->0->>'sunriseEpoch')::NUMERIC AS sunriseEpoch,
+                        (doc->'days'->0->>'sunset') AS sunset,
+                        (doc->'days'->0->>'sunsetEpoch')::NUMERIC AS sunsetEpoch,
+                        (doc->'days'->0->>'moonphase')::DOUBLE PRECISION AS moonphase,
+                        (doc->'days'->0->>'conditions') AS conditions,
+                        (doc->'days'->0->>'description') AS description,
+                        (doc->'days'->0->>'icon') AS icon,
+                        (doc->'days'->'stations')::JSON as stations
+                        FROM weather.load_temp;
+            """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
 
-sql_refresh = """REFRESH MATERIALIZED VIEW weather.mv_daily_avg_temp;"""
+sql_refresh = """
+                INSERT INTO weather.f_daily SELECT
+                                            latitude,
+                                            longitude,
+                                            datetime, 
+                                            tempmax, 
+                                            tempmin, 
+                                            feelslikemax, 
+                                            feelslikemin, 
+                                            feelslike,
+                                            dew,
+                                            humidity,
+                                            precip,
+                                            precipprob,
+                                            precipcover,
+                                            preciptype,
+                                            snow,
+                                            snowdepth,
+                                            windgust,
+                                            windspeed,
+                                            winddir,
+                                            pressure,
+                                            cloudcover,
+                                            visibility,
+                                            solarradiation,
+                                            solarenergy,
+                                            uvindex,
+                                            severerisk,
+                                            sunrise,
+                                            sunset,
+                                            moonphase,
+                                            conditions,
+                                            description 
+                                            FROM weather.raw_daily_api_local WHERE datetime = %(dagrun_date)s;
+                """
+
+#sql_refresh = """REFRESH MATERIALIZED VIEW weather.mv_daily_avg_temp;"""
 
 default_args = {
     'owner' : 'airflow',
@@ -184,21 +222,38 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         database = "projects"
     )
 
-    task6 = BashOperator(
+    task6 = PostgresOperator(
+        task_id = "update_table",
+        postgres_conn_id = "postgres_localhost",
+        sql = "sql/update_table.sql"
+        )
+
+    task7 = CustomPostgres(
+        task_id = "refresh_table",
+        sql = 'sql_refresh',
+        postgres_conn_id = "postgres_localhost",
+        autocommit = True,
+        database = "projects",
+        parameters={
+            'dagrun_date' : '{{ ds }}'
+            }
+    )
+
+    task8 = BashOperator(
         task_id = "delete_merged",
         bash_command = bc_delete,
         do_xcom_push = False
     )
 
-    task7 = PostgresOperator(
-        task_id = "view_refresh",
-        sql = sql_refresh,
-        postgres_conn_id = "postgres_localhost",
-        autocommit = True,
-        database = "projects"        
-    )
+    # task8 = PostgresOperator(
+    #     task_id = "view_refresh",
+    #     sql = sql_refresh,
+    #     postgres_conn_id = "postgres_localhost",
+    #     autocommit = True,
+    #     database = "projects"        
+    # )
 
-    task8 = DummyOperator(task_id='end')
+    task9 = DummyOperator(task_id='end')
 
     #flow
-    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8
+    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task9
