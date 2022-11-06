@@ -7,10 +7,6 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.task_group import TaskGroup
-from typing import Sequence
-
-class CustomPostgres(PostgresOperator):
-    template_fields: Sequence[str] = ('sql', 'parameters')
 
 def city_names():
     with open("./metadata/01_local_cities_name_fix.txt", 'r') as f:
@@ -131,49 +127,48 @@ sql_load = """
                         (doc->'days'->0->>'icon') AS icon,
                         (doc->'days'->'stations')::JSON as stations
                         FROM weather.load_temp;
+            DROP TABLE IF EXISTS weather.load_temp;
             """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
 
 sql_refresh = """
-                INSERT INTO weather.f_daily SELECT
-                                            latitude,
-                                            longitude,
-                                            datetime, 
-                                            tempmax, 
-                                            tempmin, 
-                                            feelslikemax, 
-                                            feelslikemin, 
-                                            feelslike,
-                                            dew,
-                                            humidity,
-                                            precip,
-                                            precipprob,
-                                            precipcover,
-                                            preciptype,
-                                            snow,
-                                            snowdepth,
-                                            windgust,
-                                            windspeed,
-                                            winddir,
-                                            pressure,
-                                            cloudcover,
-                                            visibility,
-                                            solarradiation,
-                                            solarenergy,
-                                            uvindex,
-                                            severerisk,
-                                            sunrise,
-                                            sunset,
-                                            moonphase,
-                                            conditions,
-                                            description 
-                                            FROM weather.raw_daily_api_local WHERE datetime = %(dagrun_date)s;
+            INSERT INTO weather.f_daily SELECT id,
+                                                CAST(latitude AS DOUBLE PRECISION),
+                                                CAST(longitude AS DOUBLE PRECISION),
+                                                datetime, 
+                                                tempmax, 
+                                                tempmin, 
+                                                feelslikemax, 
+                                                feelslikemin, 
+                                                feelslike,
+                                                dew,
+                                                humidity,
+                                                precip,
+                                                precipprob,
+                                                precipcover,
+                                                preciptype,
+                                                snow,
+                                                snowdepth,
+                                                windgust,
+                                                windspeed,
+                                                winddir,
+                                                pressure,
+                                                cloudcover,
+                                                visibility,
+                                                solarradiation,
+                                                solarenergy,
+                                                uvindex,
+                                                severerisk,
+                                                sunrise,
+                                                sunset,
+                                                moonphase,
+                                                conditions,
+                                                description 
+                                                FROM weather.raw_daily_api_local WHERE NOT EXISTS ( SELECT id FROM weather.f_daily WHERE id = id);
                 """
-
-#sql_refresh = """REFRESH MATERIALIZED VIEW weather.mv_daily_avg_temp;"""
 
 default_args = {
     'owner' : 'airflow',
-    'start_date' : datetime(2022,10,26),
+    'start_date' : datetime(2022,11,5),
     'schedule_interval' : "@daily",
     'catchup' : False,
     'max_active_runs' : 10,
@@ -194,7 +189,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         )
 
     with TaskGroup('report_pull_transform', prefix_group_id=False ) as tg:
-        for city in city_names():
+        for city in city_names()[:2]:
             task3 = PythonOperator(
                 task_id = 'city_report_pull_{}'.format(city).replace(" ","").upper(),
                 python_callable = api.data_pull,
@@ -228,15 +223,12 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         sql = "sql/update_table.sql"
         )
 
-    task7 = CustomPostgres(
+    task7 = PostgresOperator(
         task_id = "refresh_table",
-        sql = 'sql_refresh',
+        sql = sql_refresh,
         postgres_conn_id = "postgres_localhost",
         autocommit = True,
-        database = "projects",
-        parameters={
-            'dagrun_date' : '{{ ds }}'
-            }
+        database = "projects"
     )
 
     task8 = BashOperator(
@@ -244,14 +236,6 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         bash_command = bc_delete,
         do_xcom_push = False
     )
-
-    # task8 = PostgresOperator(
-    #     task_id = "view_refresh",
-    #     sql = sql_refresh,
-    #     postgres_conn_id = "postgres_localhost",
-    #     autocommit = True,
-    #     database = "projects"        
-    # )
 
     task9 = DummyOperator(task_id='end')
 
