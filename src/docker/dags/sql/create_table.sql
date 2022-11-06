@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS weather.d_us_cities(
 -- FACT TABLES
 
 CREATE TABLE IF NOT EXISTS weather.f_daily(
-    d_id SERIAL PRIMARY KEY NOT NULL,
+    d_id INT PRIMARY KEY NOT NULL,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
     datetime DATE,
