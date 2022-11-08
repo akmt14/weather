@@ -17,6 +17,13 @@ UPDATE weather.raw_daily_api_local SET address = 'Waco' WHERE address ILIKE 'Wac
 UPDATE weather.raw_daily_api_local SET address = 'Washington' WHERE address ILIKE 'Washington DC';
 UPDATE weather.raw_daily_api_local SET address = 'Wilkes Barre' WHERE address ILIKE 'Wilkes';
 UPDATE weather.raw_daily_api_local SET address = 'Yuma' WHERE address ILIKE 'Yuma Az';
+UPDATE weather.raw_daily_api_local SET address = 'St Petersburg' WHERE address ILIKE 'Tampa St Petersburg';
+UPDATE weather.raw_daily_api_local SET address = 'Minneapolis' WHERE address ILIKE 'Minneapolis';
+
+
+UPDATE weather.raw_daily_api_local SET resolvedaddress = 'Fort Worth, TX, United States' WHERE resolvedaddress = 'Fort Worth Ave, Iola, TX 77861, United States';
+UPDATE weather.raw_daily_api_local SET resolvedaddress = 'Minneapolis, MN, United States' WHERE resolvedaddress = 'Saint Paul Ave, Minneapolis, MN 55416, United States';
+UPDATE weather.raw_daily_api_local SET resolvedaddress = 'St Petersburg, FL, United States' WHERE resolvedaddress = 'Uptown St. Petersburg, St Petersburg, FL, United States';
 
 -- discarding non US values
 DELETE FROM weather.raw_daily_api_local WHERE resolvedaddress NOT ILIKE '%United States';
@@ -27,6 +34,17 @@ DELETE FROM weather.raw_daily_api_local WHERE resolvedaddress NOT ILIKE '%United
 -- discarding records with missing temperatues
 DELETE FROM weather.raw_daily_historic_local_ud WHERE temp_f = -99.0;
 
--- fixing address
+-- fixing address - Source - UD
 UPDATE weather.raw_daily_historic_local_ud SET city = 'Washington' WHERE city ILIKE 'Washington DC';
 UPDATE weather.raw_daily_historic_local_ud SET city = 'Tampa St Petersburg' WHERE city ILIKE 'Tampa%';
+
+-- fixing address - Source - M
+UPDATE weather.raw_daily_historic_local_m SET add = 'Wilkes Barre, NC, United States' WHERE add = 'Wilkes, NC, United States';
+UPDATE weather.raw_daily_historic_local_m SET add = 'Midland Odessa, TX, United States' WHERE add = 'Midland, TX, United States';
+UPDATE weather.raw_daily_historic_local_m SET add = 'Daytona, FL, United States' WHERE add = 'Daytona Beach, FL, United States';
+UPDATE weather.raw_daily_historic_local_m SET add = 'Miami, FL, United States' WHERE add = 'Miami Beach, FL, United States';
+UPDATE weather.raw_daily_historic_local_m SET add = 'New York City, NY, United States' WHERE add = 'New York, NY, United States';
+UPDATE weather.raw_daily_historic_local_m SET add = 'St Petersburg, FL, United States' WHERE add = 'St Petersburg, FL';
+UPDATE weather.raw_daily_historic_local_m SET add = 'Minneapolis, MN, United States' WHERE add = 'Saint Paul Ave, MN';
+
+
