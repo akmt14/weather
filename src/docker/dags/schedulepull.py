@@ -7,6 +7,7 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.task_group import TaskGroup
+#from runonceonlybranchoperator import RunOnceBranchOperator
 
 def city_names():
     with open("./metadata/01_local_cities_name_fix.txt", 'r') as f:
@@ -130,42 +131,6 @@ sql_load = """
             DROP TABLE IF EXISTS weather.load_temp;
             """.format("{{ ti.xcom_pull(task_ids='combine_files') }}")
 
-sql_refresh = """
-            INSERT INTO weather.f_daily SELECT id,
-                                                CAST(latitude AS DOUBLE PRECISION),
-                                                CAST(longitude AS DOUBLE PRECISION),
-                                                datetime, 
-                                                tempmax, 
-                                                tempmin, 
-                                                feelslikemax, 
-                                                feelslikemin, 
-                                                feelslike,
-                                                dew,
-                                                humidity,
-                                                precip,
-                                                precipprob,
-                                                precipcover,
-                                                preciptype,
-                                                snow,
-                                                snowdepth,
-                                                windgust,
-                                                windspeed,
-                                                winddir,
-                                                pressure,
-                                                cloudcover,
-                                                visibility,
-                                                solarradiation,
-                                                solarenergy,
-                                                uvindex,
-                                                severerisk,
-                                                sunrise,
-                                                sunset,
-                                                moonphase,
-                                                conditions,
-                                                description 
-                                                FROM weather.raw_daily_api_local WHERE NOT EXISTS ( SELECT id FROM weather.f_daily WHERE id = id);
-                """
-
 default_args = {
     'owner' : 'airflow',
     'start_date' : datetime(2022,11,5),
@@ -189,7 +154,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         )
 
     with TaskGroup('report_pull_transform', prefix_group_id=False ) as tg:
-        for city in city_names()[:2]:
+        for city in city_names():
             task3 = PythonOperator(
                 task_id = 'city_report_pull_{}'.format(city).replace(" ","").upper(),
                 python_callable = api.data_pull,
@@ -225,7 +190,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
 
     task7 = PostgresOperator(
         task_id = "refresh_table",
-        sql = sql_refresh,
+        sql = "sql/insert_into_tbl.sql",
         postgres_conn_id = "postgres_localhost",
         autocommit = True,
         database = "projects"
@@ -237,7 +202,21 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         do_xcom_push = False
     )
 
-    task9 = DummyOperator(task_id='end')
+    # task9 = RunOnceBranchOperator(
+    #     task_id = "load_check",
+    #     run_once_task_id = 'load_f_tbl')
+
+    # task10 = PostgresOperator(
+    #     task_id = "insert_into_tbl",
+    #     sql = "sql/insert_into_tbl.sql",
+    #     postgres_conn_id = "postgres_localhost",
+    #     autocommit = True,
+    #     database = "projects"
+    # )
+
+    task11 = DummyOperator(task_id='end')
 
     #flow
-    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task9
+    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task11
+    #[task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task11]
+    #[task1 >> task9 >> task10 >> task11]
