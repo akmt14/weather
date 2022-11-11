@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS weather.f_daily(
     );
 
 CREATE TABLE IF NOT EXISTS weather.f_hist_m(
-    m_id SERIAL PRIMARY KEY NOT NULL,
+    m_id INT PRIMARY KEY NOT NULL,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
     datetime DATE,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS weather.f_hist_m(
     );
 
 CREATE TABLE IF NOT EXISTS weather.f_hist_ud(
-    ud_id SERIAL PRIMARY KEY NOT NULL,
+    ud_id INT PRIMARY KEY NOT NULL,
     datetime DATE,
 	temp_f DOUBLE PRECISION,
     latitude DOUBLE PRECISION,
