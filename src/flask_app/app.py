@@ -1,6 +1,7 @@
-import psycopg2
-from  flask import Flask, render_template
 import os
+import psycopg2
+from flask import Flask, render_template
+
 
 class Database:
     def __init__(self, user, password, host, dbname):
@@ -15,7 +16,6 @@ class Database:
         
         parameters:
             host - hostname, localhost in this instance
-            
             user - postgres username
             password - postgres password
             dbname - postgres database to connect to
