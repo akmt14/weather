@@ -10,7 +10,11 @@ data
 .DS_Store
 src/weather-docker/metadata/*.txt
 src/weather-docker/dags/*.txt
+*wenv
+*/.archive
+
+# images
 *.drawio
 *.png
 *.webp
-./icons
+*.jpeg
