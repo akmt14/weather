@@ -46,19 +46,8 @@ CREATE TABLE IF NOT EXISTS weather.raw_daily_api_local
 	station JSON
     );
 
-CREATE TABLE IF NOT EXISTS weather.raw_daily_hist_local_ud
-(
-    id SERIAL PRIMARY KEY NOT NULL,
-	"month" TEXT,
-	"day" TEXT,
-	"year" TEXT,
-	temp_f DOUBLE PRECISION,
-    "state" TEXT,
-    city TEXT
-    );
-
     
-CREATE TABLE IF NOT EXISTS weather.raw_daily_historic_local_m
+CREATE TABLE IF NOT EXISTS weather.raw_daily_historic_local
 (
     id SERIAL PRIMARY KEY NOT NULL,
     "time" DATE,
@@ -132,7 +121,7 @@ CREATE TABLE IF NOT EXISTS weather.f_daily(
     description TEXT
     );
 
-CREATE TABLE IF NOT EXISTS weather.f_hist_m(
+CREATE TABLE IF NOT EXISTS weather.f_hist(
     m_id INT PRIMARY KEY NOT NULL,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
@@ -147,12 +136,4 @@ CREATE TABLE IF NOT EXISTS weather.f_hist_m(
     wpgt DOUBLE PRECISION,
     pres DOUBLE PRECISION,
     tsun DOUBLE PRECISION
-    );
-
-CREATE TABLE IF NOT EXISTS weather.f_hist_ud(
-    ud_id INT PRIMARY KEY NOT NULL,
-    datetime DATE,
-	temp_f DOUBLE PRECISION,
-    latitude DOUBLE PRECISION,
-    longitude DOUBLE PRECISION
     );
