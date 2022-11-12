@@ -31,7 +31,7 @@ with engine.connect() as CONNECTION:
     df = pd.read_sql(QUERY, CONNECTION)
     dfl = df.values.tolist()
 
-start = datetime(2020, 5, 14)
+start = datetime(2000, 1, 1)
 end = datetime(2022, 10, 24)
 
 for lat, lon, add in dfl:
@@ -45,6 +45,7 @@ for lat, lon, add in dfl:
         data.reset_index(inplace=True)
         data['lat'], data['lon'], data['add']  = lat, lon, add
         city = "_".join(i.strip().replace(" ","") for i in add.split(',')[:2])
-        data.to_csv(f'data/01_historic/local/raw/meteostat/{city}.csv', index=False)
+        data.to_csv(f'data/01_historic/local/{city}.csv', index=False)
+        print(f'DATAPULL SUCCESS for city - {add}.')
     except Exception as e:
-        print(f'DATAPULL ERROR for address - {add}. REASON - {e}')
+        print(f'DATAPULL ***ERROR*** for city - {add}. REASON - {e}')
