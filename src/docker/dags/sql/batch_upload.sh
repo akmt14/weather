@@ -1,13 +1,7 @@
 #!/bin/bash
 
-hist_fpath="./data/01_historic/local/data_load/universityofdayton/"
+hist_fpath="./data/01_historic/local/"
 
 for f in $hist_fpath*.csv;do
-    cat $f | psql -U postgres -d projects -c "COPY weather.raw_daily_historic_local_ud(month, day, year, temp_f, state, city) FROM STDIN DELIMITER ',' "
-done
-
-hist_fpath="./data/01_historic/local/data_load/meteostat/"
-
-for f in $hist_fpath*.csv;do
-    cat $f | psql -U postgres -d projects -c "COPY weather.raw_daily_historic_local_m(time, tavg, tmin, tmax, prcp, snow, wdir, wspd, wpgt, pres, tsun, lat, lon, add) FROM STDIN DELIMITER ',' CSV HEADER;"
+    cat $f | psql -U postgres -d projects -c "COPY weather.raw_daily_historic_local(time, tavg, tmin, tmax, prcp, snow, wdir, wspd, wpgt, pres, tsun, lat, lon, add) FROM STDIN DELIMITER ',' CSV HEADER;"
 done
