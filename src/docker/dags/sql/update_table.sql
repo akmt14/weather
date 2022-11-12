@@ -32,19 +32,16 @@ DELETE FROM weather.raw_daily_api_local WHERE resolvedaddress NOT ILIKE '%United
 -- * HISTORIC TABLE MANIPULATION
 
 -- discarding records with missing temperatues
-DELETE FROM weather.raw_daily_historic_local_ud WHERE temp_f = -99.0;
+--DELETE FROM weather.raw_daily_historic_local_ud WHERE temp_f = -99.0;
 
--- fixing address - Source - UD
-UPDATE weather.raw_daily_historic_local_ud SET city = 'Washington' WHERE city ILIKE 'Washington DC';
-UPDATE weather.raw_daily_historic_local_ud SET city = 'Tampa St Petersburg' WHERE city ILIKE 'Tampa%';
+-- fixing address in historic tbl
 
--- fixing address - Source - M
-UPDATE weather.raw_daily_historic_local_m SET add = 'Wilkes Barre, NC, United States' WHERE add = 'Wilkes, NC, United States';
-UPDATE weather.raw_daily_historic_local_m SET add = 'Midland Odessa, TX, United States' WHERE add = 'Midland, TX, United States';
-UPDATE weather.raw_daily_historic_local_m SET add = 'Daytona, FL, United States' WHERE add = 'Daytona Beach, FL, United States';
-UPDATE weather.raw_daily_historic_local_m SET add = 'Miami, FL, United States' WHERE add = 'Miami Beach, FL, United States';
-UPDATE weather.raw_daily_historic_local_m SET add = 'New York City, NY, United States' WHERE add = 'New York, NY, United States';
-UPDATE weather.raw_daily_historic_local_m SET add = 'St Petersburg, FL, United States' WHERE add = 'St Petersburg, FL';
-UPDATE weather.raw_daily_historic_local_m SET add = 'Minneapolis, MN, United States' WHERE add = 'Saint Paul Ave, MN';
+UPDATE weather.raw_daily_historic_local SET add = 'Wilkes Barre, NC, United States' WHERE add = 'Wilkes, NC, United States';
+UPDATE weather.raw_daily_historic_local SET add = 'Midland Odessa, TX, United States' WHERE add = 'Midland, TX, United States';
+UPDATE weather.raw_daily_historic_local SET add = 'Daytona, FL, United States' WHERE add = 'Daytona Beach, FL, United States';
+UPDATE weather.raw_daily_historic_local SET add = 'Miami, FL, United States' WHERE add = 'Miami Beach, FL, United States';
+UPDATE weather.raw_daily_historic_local SET add = 'New York City, NY, United States' WHERE add = 'New York, NY, United States';
+UPDATE weather.raw_daily_historic_local SET add = 'St Petersburg, FL, United States' WHERE add = 'St Petersburg, FL';
+UPDATE weather.raw_daily_historic_local SET add = 'Minneapolis, MN, United States' WHERE add = 'Saint Paul Ave, MN';
 
 
