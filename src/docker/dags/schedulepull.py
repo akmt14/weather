@@ -7,7 +7,6 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.task_group import TaskGroup
-#from runonceonlybranchoperator import RunOnceBranchOperator
 
 def city_names():
     with open("./metadata/01_local_cities_name_fix.txt", 'r') as f:
@@ -196,27 +195,23 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
         database = "projects"
     )
 
-    task8 = BashOperator(
+    task8 = PostgresOperator(
+        task_id = "refresh_view",
+        sql = "REFRESH MATERIALIZED VIEW weather.mv_temp;",
+        postgres_conn_id = "postgres_localhost",
+        autocommit = True,
+        database = "projects"
+    )
+
+    task9 = BashOperator(
         task_id = "delete_merged",
         bash_command = bc_delete,
         do_xcom_push = False
     )
 
-    # task9 = RunOnceBranchOperator(
-    #     task_id = "load_check",
-    #     run_once_task_id = 'load_f_tbl')
-
-    # task10 = PostgresOperator(
-    #     task_id = "insert_into_tbl",
-    #     sql = "sql/insert_into_tbl.sql",
-    #     postgres_conn_id = "postgres_localhost",
-    #     autocommit = True,
-    #     database = "projects"
-    # )
-
-    task11 = DummyOperator(task_id='end')
+    task10 = DummyOperator(task_id='end')
 
     #flow
-    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task11
+    task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task9 >> task10
     #[task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task11]
     #[task1 >> task9 >> task10 >> task11]
