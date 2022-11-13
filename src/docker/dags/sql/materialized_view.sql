@@ -17,7 +17,9 @@ WITH weather_tbl AS (
 	FROM weather.f_hist fm
 )
 
-SELECT w.*, resolvedaddress 
+SELECT ROW_NUMBER() OVER () AS ID, 
+		w.*,
+		resolvedaddress as City
 FROM weather_tbl w
 JOIN weather.dim_location dl 
 ON CAST(dl.latitude AS DOUBLE PRECISION) = w.latitude AND CAST(dl.longitude AS DOUBLE PRECISION) = w.longitude
