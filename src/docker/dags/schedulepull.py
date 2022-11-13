@@ -1,12 +1,14 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
 from datetime import datetime
+
 import airflow_api as api
-from airflow.operators.postgres_operator import PostgresOperator
+from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
-from airflow.utils.trigger_rule import TriggerRule
+from airflow.operators.postgres_operator import PostgresOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.task_group import TaskGroup
+from airflow.utils.trigger_rule import TriggerRule
+
 
 def city_names():
     with open("./metadata/01_local_cities_name_fix.txt", 'r') as f:
@@ -213,5 +215,3 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
 
     #flow
     task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task9 >> task10
-    #[task1 >> task2 >> tg >> task4 >> task5 >> task6 >> task7 >> task8 >> task11]
-    #[task1 >> task9 >> task10 >> task11]
