@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from flask import Flask, render_template
-
+import json
 
 class Database:
     def __init__(self, user, password, host, dbname):
@@ -40,14 +40,14 @@ class Database:
         """Run a SQL query to select rows from table."""
         with self.conn.cursor() as cur:
             cur.execute(query)
-            records = [row for row in cur.fetchall()]
+            records = cur.fetchall()
             cur.close()
             return records
 
 app = Flask(__name__)
 
-@app.route("/weather")
-def index():
+@app.route("/project")
+def project():
     #c=psycopg2.connect("postgresql://user:password@host:port/dbname")
     c = Database(host=os.getenv('HOST'), 
                  user=os.getenv('USERNAME'),
@@ -55,8 +55,12 @@ def index():
                  dbname=os.getenv('DATABASE'))
 
     c.connect()
-    results = c.select_rows(query='select * from  weather.f_daily LIMIT 10')
-    return render_template('index.html', data=results)
+    cols = ['Date', 'Latitude', 'Longitude', 'Max_Temperature', 'Min_Temperature', 'Avg_Temperature', 'City']
+    results = c.select_rows(query="""SELECT Date, Latitude, Longitude, Max_Temperature, Min_Temperature, Avg_Temperature, City FROM weather.mv_temp WHERE City ilike '%York%' LIMIT 10""")
+    json_data=[]
+    for result in results:
+        json_data.append(dict(zip(cols,result)))
+    return render_template('project.html', data=json.dumps(json_data, default=str))
 
 if __name__ == '__main__':
     app.run(debug=True)
