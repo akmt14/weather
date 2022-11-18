@@ -1,4 +1,4 @@
-CREATE MATERIALIZED VIEW weather.mv_temp AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS weather.mv_temp AS (
 WITH weather_tbl AS (
 	SELECT fd.datetime AS Date,
 			fd.latitude AS Latitude,
