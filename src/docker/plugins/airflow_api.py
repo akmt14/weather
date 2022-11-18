@@ -12,13 +12,14 @@ from airflow.exceptions import AirflowFailException, AirflowException
 from airflow.models import Variable
 
 
-def data_pull(location_parent:str, location_child:str, ti, **context):
+def data_pull(location_parent:str, location_child:str, s_date:str, ti, **context):
 
     """
     pull t-1 day's weather report for specified city
 
     location_parent : local/international
     location_child  : 'New York City'
+    s_date
     """
 
     try:
@@ -38,8 +39,8 @@ def data_pull(location_parent:str, location_child:str, ti, **context):
         #If start date only is specified, a single historical or forecast day will be retrieved
         #If both start and and end date are specified, a date range will be retrieved
 
-        StartDate = datetime.strftime(datetime.now() - timedelta(1),'%Y-%m-%d')
-        EndDate = datetime.strftime(datetime.now() - timedelta(1),'%Y-%m-%d')
+        StartDate = datetime.strftime(datetime.strptime(s_date, '%Y-%m-%d') - timedelta(1), '%Y-%m-%d') #datetime.strftime(datetime.now() - timedelta(1),'%Y-%m-%d')
+        EndDate = StartDate #datetime.strftime(datetime.now() - timedelta(1),'%Y-%m-%d')
         
         #JSON or CSV 
         #JSON format supports daily, hourly, current conditions, weather alerts and events in a single JSON package
@@ -134,7 +135,7 @@ def data_pull(location_parent:str, location_child:str, ti, **context):
 
 if __name__ == '__main__':    
     try:
-        parent, child = sys.argv[1], sys.argv[2]
-        data_pull(location_parent = parent, location_child = child)
+        parent, child, s_Date = sys.argv[1], sys.argv[2], sys.argv[3]
+        data_pull(location_parent = parent, location_child = child , s_date = s_date)
     except Exception as e:
         print("API data pull ERROR - {}".format(e))
