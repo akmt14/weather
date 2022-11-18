@@ -136,7 +136,7 @@ default_args = {
     'owner' : 'airflow',
     'start_date' : datetime(2022,11,5),
     'schedule_interval' : "@daily",
-    'catchup' : False,
+    'catchup' : False, # needs fixing. related to startdate & enddate in airflowapi.py
     'max_active_runs' : 10,
     'email' : ['akshay.kamath.14@gmail.com'], # <- TO DO
     'email_on_failure': False,
@@ -159,11 +159,11 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
             task3 = PythonOperator(
                 task_id = 'city_report_pull_{}'.format(city).replace(" ","").upper(),
                 python_callable = api.data_pull,
-                op_args = ["local", city],
+                op_args = ["local", city, '{{ ds }}'],
                 provide_context = True,
                 do_xcom_push = True,
                 trigger_rule = TriggerRule.ALL_SUCCESS,
-                retries = 5
+                retries = 3
                 )
 
             task3
