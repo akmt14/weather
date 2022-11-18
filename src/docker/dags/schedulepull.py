@@ -151,7 +151,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
     task2 = PostgresOperator(
         task_id = "create_table",
         postgres_conn_id = "postgres_localhost",
-        sql = "sql/create_table.sql"
+        sql = "sql/create.sql"
         )
 
     with TaskGroup('report_pull_transform', prefix_group_id=False ) as tg:
