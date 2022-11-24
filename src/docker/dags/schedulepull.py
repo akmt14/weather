@@ -134,7 +134,7 @@ sql_load = """
 
 default_args = {
     'owner' : 'airflow',
-    'start_date' : datetime(2022,11,5),
+    'start_date' : datetime(2022,11,18),
     'schedule_interval' : "@daily",
     'catchup' : False, # needs fixing. related to startdate & enddate in airflowapi.py
     'max_active_runs' : 10,
