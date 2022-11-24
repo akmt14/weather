@@ -10,3 +10,8 @@ A project that involves building an automated data pipeline process to pull dail
 * Daily data is sourced from the Visualcrossing API.
 * A scheduled Airflow DAG hosted in a Docker container pulls data for around 150 US cities, transforms it & then loads it into a PostgreSQL database.
 * Using the built-in PostgreSQL plugin, data is then visualized in Grafana.
+
+
+## How it looks
+
+![grafana_snapshot](https://user-images.githubusercontent.com/32349457/203765865-7886aee6-65f9-415d-8d7c-4ae15081c482.png)
