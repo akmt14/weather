@@ -1,6 +1,6 @@
 # Weather Data Pipeline
 
-A project that involved building an automated data pipeline process that pulls weather data from multiple sources & visualizes it.
+A project that involves building an automated data pipeline process to pull daily weather data from multiple sources, transform it & then visualize it.
 
 ## Pipeline
 
