@@ -15,6 +15,3 @@ src/weather-docker/dags/*.txt
 
 # images
 *.drawio
-*.png
-*.webp
-*.jpeg
