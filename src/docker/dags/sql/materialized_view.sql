@@ -26,3 +26,19 @@ ON CAST(dl.latitude AS DOUBLE PRECISION) = w.latitude AND CAST(dl.longitude AS D
 );
 
 
+CREATE MATERIALIZED VIEW IF NOT EXISTS weather.mv_rain_snow AS (
+WITH rain_snow_tbl AS (
+SELECT fd.datetime AS Date,
+			fd.latitude AS Latitude,
+			fd.longitude AS Longitude,
+			fd.precip AS rain,
+			fd.snow
+FROM weather.f_daily fd
+)
+
+SELECT ROW_NUMBER() OVER () AS ID, 
+		rs.*,
+		resolvedaddress AS City
+FROM rain_snow_tbl rs
+JOIN weather.dim_location dl 
+ON CAST(dl.latitude AS DOUBLE PRECISION) = rs.latitude AND CAST(dl.longitude AS DOUBLE PRECISION) = rs.longitude);

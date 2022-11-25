@@ -199,7 +199,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
 
     task8 = PostgresOperator(
         task_id = "refresh_view",
-        sql = "REFRESH MATERIALIZED VIEW weather.mv_temp;",
+        sql = "REFRESH MATERIALIZED VIEW weather.mv_temp; REFRESH MATERIALIZED VIEW weather.mv_rain_snow;",
         postgres_conn_id = "postgres_localhost",
         autocommit = True,
         database = "projects"
