@@ -14,4 +14,4 @@ A project that involves building an automated data pipeline process to pull dail
 
 ## How it looks
 
-![dashboard](https://user-images.githubusercontent.com/32349457/204084278-5c0b8d1c-7f8f-4617-a421-51025f752f2a.png)
+![dashboard](https://user-images.githubusercontent.com/32349457/204085414-0fa454e7-a273-4f51-a075-dbb259e4de6e.png)
