@@ -8,7 +8,7 @@ A project that involves building an automated data pipeline process to pull dail
 
 * A one time historical data pull (2000-2022) was done using Meteostat.
 * Daily data is sourced from the Visualcrossing API.
-* A scheduled Airflow DAG hosted in a Docker container pulls data for around 150 US cities, transforms it & then loads it into a PostgreSQL database.
+* A scheduled Airflow DAG hosted in a Docker container extracts data via API calls for around 150 US cities, transforms it & then loads it into a PostgreSQL database.
 * Using the built-in PostgreSQL plugin, data is then visualized in Grafana.
 
 
