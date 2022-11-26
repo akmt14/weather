@@ -136,9 +136,8 @@ default_args = {
     'owner' : 'airflow',
     'start_date' : datetime(2022,11,18),
     'schedule_interval' : "@daily",
-    'catchup' : False, # needs fixing. related to startdate & enddate in airflowapi.py
+    'catchup' : False,
     'max_active_runs' : 10,
-    'email' : ['akshay.kamath.14@gmail.com'], # <- TO DO
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 0
@@ -199,7 +198,7 @@ with DAG("scheduled_api_pull_dag", default_args = default_args ) as dag:
 
     task8 = PostgresOperator(
         task_id = "refresh_view",
-        sql = "REFRESH MATERIALIZED VIEW weather.mv_temp; REFRESH MATERIALIZED VIEW weather.mv_rain_snow;",
+        sql = "REFRESH MATERIALIZED VIEW weather.mv_temp; REFRESH MATERIALIZED VIEW weather.mv_other;",
         postgres_conn_id = "postgres_localhost",
         autocommit = True,
         database = "projects"
